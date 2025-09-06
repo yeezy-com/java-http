@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 public enum ResponseStatus {
 
     OK(200),
+    UNAUTHORIZED(401),
     ;
 
     private final int code;

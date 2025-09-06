@@ -43,7 +43,7 @@ public class Http11Processor implements Runnable, Processor {
 
     private void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if ("/".equals(httpRequest.path())) {
-            httpResponse.send200("Hello world!");
+            httpResponse.send200(ContentType.HTML, "Hello world!");
         }
 
         if ("/login".equals(httpRequest.path())) {
@@ -57,13 +57,23 @@ public class Http11Processor implements Runnable, Processor {
 
                 } else {
                     log.info("아이디 또는 비밀번호가 다릅니다.");
+                    httpResponse.send401(
+                        ContentType.HTML,
+                        new String(staticFileLoader.readAllFileWithUri("/401.html"))
+                    );
                 }
             }
 
-            httpResponse.send200(new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html")));
+            httpResponse.send200(
+                ContentType.HTML,
+                new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
+            );
         }
 
+        int index = httpRequest.path().lastIndexOf(".");
+        String extension = httpRequest.path().substring(index + 1);
+
         String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.path()));
-        httpResponse.send200(staticFile);
+        httpResponse.send200(ContentType.valueOf(extension.toUpperCase()), staticFile);
     }
 }
