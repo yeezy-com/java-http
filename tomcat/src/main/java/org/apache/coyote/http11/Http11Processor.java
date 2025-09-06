@@ -45,7 +45,8 @@ public class Http11Processor implements Runnable, Processor {
                 throw new UnsupportedOperationException("지원하지 않는 프로토콜입니다.");
             }
 
-            HttpResponse response = handle(new HttpRequest(requestLineToken[0], requestLineToken[1]));
+            HttpRequest httpRequest = new HttpRequest(requestLineToken[0], requestLineToken[1]);
+            HttpResponse response = handle(httpRequest);
 
             outputStream.write(response.serveResponse().getBytes());
             outputStream.flush();
