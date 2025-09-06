@@ -36,7 +36,7 @@ public class Http11Processor implements Runnable, Processor {
             HttpResponse httpResponse = new HttpResponse(outputStream);
 
             if (httpRequest.isGetMethod()) {
-                handle(httpRequest, httpResponse);
+                getMethodHandle(httpRequest, httpResponse);
                 return;
             }
 
@@ -48,7 +48,7 @@ public class Http11Processor implements Runnable, Processor {
         }
     }
 
-    private void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+    private void getMethodHandle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if ("/".equals(httpRequest.path())) {
             httpResponse.send200(ContentType.HTML, "Hello world!");
             return;
