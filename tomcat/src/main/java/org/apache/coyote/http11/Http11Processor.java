@@ -84,6 +84,10 @@ public class Http11Processor implements Runnable, Processor {
             return;
         }
 
+        if ("/register".equals(httpRequest.path())) {
+            httpResponse.send200(ContentType.HTML, new String(staticFileLoader.readAllFileWithUri("/register.html")));
+        }
+
         int index = httpRequest.path().lastIndexOf(".");
         String extension = httpRequest.path().substring(index + 1);
 
