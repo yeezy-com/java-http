@@ -2,7 +2,14 @@ package org.apache.coyote.http11;
 
 import java.nio.charset.StandardCharsets;
 
-public record HttpResponse(String contentType, String responseBody) {
+public final class HttpResponse {
+    private final String contentType;
+    private final String responseBody;
+
+    public HttpResponse(String contentType, String responseBody) {
+        this.contentType = contentType;
+        this.responseBody = responseBody;
+    }
 
     public String serveResponse() {
         return String.join("\r\n",
