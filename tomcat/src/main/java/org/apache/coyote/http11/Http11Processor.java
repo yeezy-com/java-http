@@ -44,6 +44,7 @@ public class Http11Processor implements Runnable, Processor {
     private void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if ("/".equals(httpRequest.path())) {
             httpResponse.send200(ContentType.HTML, "Hello world!");
+            return;
         }
 
         if ("/login".equals(httpRequest.path())) {
@@ -68,6 +69,7 @@ public class Http11Processor implements Runnable, Processor {
                 ContentType.HTML,
                 new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
             );
+            return;
         }
 
         int index = httpRequest.path().lastIndexOf(".");
