@@ -1,14 +1,14 @@
 package org.apache.coyote.http11;
 
 public class RequestLine {
-    private final String method;
+    private final RequestMethod method;
     private final String uri;
 
     public RequestLine(final String requestLine) {
         String[] requestLineToken = requestLine.split(" ");
         validateRequestLineIsStandard(requestLineToken);
 
-        this.method = requestLineToken[0];
+        this.method = RequestMethod.valueOf(requestLineToken[0]);
         this.uri = requestLineToken[1];
     }
 
@@ -18,11 +18,19 @@ public class RequestLine {
         }
     }
 
-    public String getMethod() {
+    public RequestMethod getMethod() {
         return method;
     }
 
     public String getUri() {
         return uri;
+    }
+
+    public boolean isGet() {
+        return method.isGet();
+    }
+
+    public boolean isPost() {
+        return method.isPost();
     }
 }

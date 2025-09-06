@@ -35,7 +35,14 @@ public class Http11Processor implements Runnable, Processor {
             HttpRequest httpRequest = new HttpRequest(inputStream);
             HttpResponse httpResponse = new HttpResponse(outputStream);
 
-            handle(httpRequest, httpResponse);
+            if (httpRequest.isGetMethod()) {
+                handle(httpRequest, httpResponse);
+                return;
+            }
+
+            if (httpRequest.isPostMethod()) {
+
+            }
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }

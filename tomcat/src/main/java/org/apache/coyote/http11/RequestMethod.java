@@ -7,4 +7,12 @@ public enum RequestMethod {
     DELETE,
     PATCH,
     ;
+
+    public boolean isGet() {
+        return GET == this;
+    }
+
+    public boolean isPost() {
+        return POST == this;
+    }
 }

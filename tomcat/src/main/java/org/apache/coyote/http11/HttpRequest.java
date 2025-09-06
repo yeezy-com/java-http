@@ -72,4 +72,12 @@ public final class HttpRequest {
 
         return requestLine.getUri().substring(0, index);
     }
+
+    public boolean isGetMethod() {
+        return requestLine.isGet();
+    }
+
+    public boolean isPostMethod() {
+        return requestLine.isPost();
+    }
 }
