@@ -16,15 +16,18 @@ public final class HttpResponse {
     }
 
     public void send200(final ContentType contentType, final String responseBody) throws IOException {
-        String http = parseResponse(ResponseStatus.OK, contentType, responseBody);
-        outputStream.write(http.getBytes());
-        outputStream.flush();
         addContentType(contentType);
         addContentLength(responseBody);
         String http = parseResponse(ResponseStatus.OK, responseBody);
         sendResponse(http);
     }
 
+    public void send302(final String location, final ContentType contentType, final String responseBody)
+        throws IOException {
+        addContentType(contentType);
+        addContentLength(responseBody);
+        String http = parseResponse(ResponseStatus.FOUND, responseBody);
+        sendResponse(http);
     }
 
     public void send401(final ContentType contentType, final String responseBody) throws IOException {

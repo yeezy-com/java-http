@@ -3,6 +3,7 @@ package org.apache.coyote.http11;
 public enum ResponseStatus {
 
     OK(200),
+    FOUND(302),
     UNAUTHORIZED(401),
     ;
 
@@ -13,6 +14,6 @@ public enum ResponseStatus {
     }
 
     public String parseStatusLine() {
-        return String.format("OK %d ", code);
+        return String.format("%d OK ", code);
     }
 }
