@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public final class HttpRequest {
 
-    private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     private final Map<String, String> params;
     private final RequestLine requestLine;
