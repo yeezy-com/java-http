@@ -3,9 +3,7 @@ package org.apache.coyote.http11;
 import com.techcourse.db.InMemoryUserRepository;
 import com.techcourse.exception.UncheckedServletException;
 import com.techcourse.model.User;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Map;
 import java.util.Optional;
@@ -35,17 +33,7 @@ public class Http11Processor implements Runnable, Processor {
     public void process(final Socket connection) {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
-
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String requestLine = bufferedReader.readLine();
-            log.info("{}", requestLine);
-
-            String[] requestLineToken = requestLine.split(" ");
-            if (requestLineToken.length != 3) {
-                throw new UnsupportedOperationException("지원하지 않는 프로토콜입니다.");
-            }
-
-            HttpRequest httpRequest = new HttpRequest(requestLineToken[0], requestLineToken[1]);
+            HttpRequest httpRequest = new HttpRequest(inputStream);
             HttpResponse response = handle(httpRequest);
 
             outputStream.write(response.serveResponse().getBytes());
