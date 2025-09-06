@@ -66,10 +66,10 @@ public class Http11Processor implements Runnable, Processor {
             );
         }
 
-        int extensionIndex = httpRequest.uri().lastIndexOf(".");
-        String extension = httpRequest.uri().substring(extensionIndex + 1);
+        int extensionIndex = httpRequest.path().lastIndexOf(".");
+        String extension = httpRequest.path().substring(extensionIndex + 1);
 
-        String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.uri()));
+        String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.path()));
         return new HttpResponse(extension, staticFile);
     }
 }

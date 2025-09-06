@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +15,7 @@ public final class HttpRequest {
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
     private final Map<String, String> params;
-
-    private String method;
-    private String uri;
+    private final RequestLine requestLine;
 
     public HttpRequest(final InputStream inputStream) {
         try {
@@ -26,11 +23,7 @@ public final class HttpRequest {
             String requestLine = bufferedReader.readLine();
             log.info("{}", requestLine);
 
-            String[] requestLineToken = requestLine.split(" ");
-            validateRequestLineIsStandard(requestLineToken);
-
-            this.method = requestLineToken[0];
-            this.uri = requestLineToken[1];
+            this.requestLine = new RequestLine(requestLine);
             this.params = getQueryStrings();
         } catch (IOException e) {
             throw new RuntimeException("요청을 읽는데 실패했습니다.");
@@ -59,18 +52,12 @@ public final class HttpRequest {
     }
 
     private Optional<String> getQueryString() {
-        int index = uri.indexOf("?");
+        int index = requestLine.getUri().indexOf("?");
         if (index == -1) {
             return Optional.empty();
         }
 
-        return Optional.of(uri.substring(index + 1));
-    }
-
-    private void validateRequestLineIsStandard(String[] requestLineToken) {
-        if (requestLineToken.length != 3) {
-            throw new IllegalArgumentException("잘못된 HTTP 요청입니다.");
-        }
+        return Optional.of(requestLine.getUri().substring(index + 1));
     }
 
     public String getParam(final String key) {
@@ -78,45 +65,11 @@ public final class HttpRequest {
     }
 
     public String path() {
-        int index = uri.indexOf("?");
+        int index = requestLine.getUri().indexOf("?");
         if (index == -1) {
-            return uri;
+            return requestLine.getUri();
         }
 
-        return uri.substring(0, index);
+        return requestLine.getUri().substring(0, index);
     }
-
-    public String method() {
-        return method;
-    }
-
-    public String uri() {
-        return uri;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
-        var that = (HttpRequest) obj;
-        return Objects.equals(this.method, that.method) &&
-            Objects.equals(this.uri, that.uri);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(method, uri);
-    }
-
-    @Override
-    public String toString() {
-        return "HttpRequest[" +
-            "method=" + method + ", " +
-            "uri=" + uri + ']';
-    }
-
 }
