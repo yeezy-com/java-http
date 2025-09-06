@@ -33,18 +33,17 @@ public class Http11Processor implements Runnable, Processor {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
             HttpRequest httpRequest = new HttpRequest(inputStream);
-            HttpResponse response = handle(httpRequest);
+            HttpResponse httpResponse = new HttpResponse(outputStream);
 
-            outputStream.write(response.serveResponse().getBytes());
-            outputStream.flush();
+            handle(httpRequest, httpResponse);
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private HttpResponse handle(final HttpRequest httpRequest) throws IOException {
+    private void handle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if ("/".equals(httpRequest.path())) {
-            return new HttpResponse("html", "Hello world!");
+            httpResponse.send200("Hello world!");
         }
 
         if ("/login".equals(httpRequest.path())) {
@@ -55,21 +54,16 @@ public class Http11Processor implements Runnable, Processor {
                 Optional<User> user = InMemoryUserRepository.findByAccount(account);
                 if (user.isPresent() && user.get().checkPassword(password)) {
                     log.info("{}", user.get());
+
                 } else {
                     log.info("아이디 또는 비밀번호가 다릅니다.");
                 }
             }
 
-            return new HttpResponse(
-                "html",
-                new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
-            );
+            httpResponse.send200(new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html")));
         }
 
-        int extensionIndex = httpRequest.path().lastIndexOf(".");
-        String extension = httpRequest.path().substring(extensionIndex + 1);
-
         String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.path()));
-        return new HttpResponse(extension, staticFile);
+        httpResponse.send200(staticFile);
     }
 }
