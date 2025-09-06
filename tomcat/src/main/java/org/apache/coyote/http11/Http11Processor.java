@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.coyote.Processor;
@@ -50,20 +49,27 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private HttpResponse handle(final HttpRequest httpRequest) throws IOException {
-        if (httpRequest.uri().equals("/")) {
+        if ("/".equals(httpRequest.path())) {
             return new HttpResponse("html", "Hello world!");
         }
 
-        if (httpRequest.uri().startsWith("/login")) {
+        if ("/login".equals(httpRequest.path())) {
             Map<String, String> queryStrings = httpRequest.getQueryStrings();
-            String account = queryStrings.getOrDefault("account", "");
+            String account = queryStrings.get("account");
+            String password = queryStrings.get("password");
 
-            Optional<User> user = InMemoryUserRepository.findByAccount(account);
-            log.info("{}", user.orElse(null));
+            if (account != null && password != null) {
+                Optional<User> user = InMemoryUserRepository.findByAccount(account);
+                if (user.isPresent() && user.get().checkPassword(password)) {
+                    log.info("{}", user.get());
+                } else {
+                    log.info("아이디 또는 비밀번호가 다릅니다.");
+                }
+            }
 
             return new HttpResponse(
                 "html",
-                new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath() + ".html"))
+                new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
             );
         }
 

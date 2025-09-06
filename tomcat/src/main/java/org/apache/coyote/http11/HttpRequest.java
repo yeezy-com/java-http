@@ -36,7 +36,7 @@ public record HttpRequest(String method, String uri) {
         return Optional.of(uri.substring(index + 1));
     }
 
-    public String getPath() {
+    public String path() {
         int index = uri.indexOf("?");
         if (index == -1) {
             return uri;
