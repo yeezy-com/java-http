@@ -26,6 +26,7 @@ public final class HttpResponse {
         throws IOException {
         addContentType(contentType);
         addContentLength(responseBody);
+        addHeader("Location", location);
         String http = parseResponse(ResponseStatus.FOUND, responseBody);
         sendResponse(http);
     }

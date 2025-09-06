@@ -56,6 +56,11 @@ public class Http11Processor implements Runnable, Processor {
                 if (user.isPresent() && user.get().checkPassword(password)) {
                     log.info("{}", user.get());
 
+                    httpResponse.send302(
+                        "/index.html",
+                        ContentType.HTML,
+                        ""
+                    );
                 } else {
                     log.info("아이디 또는 비밀번호가 다릅니다.");
                     httpResponse.send401(
