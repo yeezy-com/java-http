@@ -70,6 +70,13 @@ public final class HttpRequest {
         return Optional.of(uri.substring(index + 1));
     }
 
+    private void validateRequestLineIsStandard(String[] requestLineToken) {
+        if (requestLineToken.length != 3) {
+            throw new IllegalArgumentException("잘못된 HTTP 요청입니다.");
+        }
+    }
+
+
     public String path() {
         int index = uri.indexOf("?");
         if (index == -1) {
