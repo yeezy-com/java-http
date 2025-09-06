@@ -5,7 +5,6 @@ import com.techcourse.exception.UncheckedServletException;
 import com.techcourse.model.User;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Map;
 import java.util.Optional;
 import org.apache.coyote.Processor;
 import org.slf4j.Logger;
@@ -49,9 +48,8 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         if ("/login".equals(httpRequest.path())) {
-            Map<String, String> queryStrings = httpRequest.getQueryStrings();
-            String account = queryStrings.get("account");
-            String password = queryStrings.get("password");
+            String account = httpRequest.getParam("account");
+            String password = httpRequest.getParam("password");
 
             if (account != null && password != null) {
                 Optional<User> user = InMemoryUserRepository.findByAccount(account);

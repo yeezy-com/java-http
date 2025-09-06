@@ -15,6 +15,8 @@ public final class HttpRequest {
 
     private static final Logger log = LoggerFactory.getLogger(Http11Processor.class);
 
+    private final Map<String, String> params;
+
     private String method;
     private String uri;
 
@@ -29,18 +31,13 @@ public final class HttpRequest {
 
             this.method = requestLineToken[0];
             this.uri = requestLineToken[1];
+            this.params = getQueryStrings();
         } catch (IOException e) {
             throw new RuntimeException("요청을 읽는데 실패했습니다.");
         }
     }
 
-    private void validateRequestLineIsStandard(String[] requestLineToken) {
-        if (requestLineToken.length != 3) {
-            throw new IllegalArgumentException("잘못된 HTTP 요청입니다.");
-        }
-    }
-
-    public Map<String, String> getQueryStrings() {
+    private Map<String, String> getQueryStrings() {
         Map<String, String> queryStrings = new HashMap<>();
 
         Optional<String> queryString = getQueryString();
@@ -76,6 +73,9 @@ public final class HttpRequest {
         }
     }
 
+    public String getParam(final String key) {
+        return params.get(key);
+    }
 
     public String path() {
         int index = uri.indexOf("?");
