@@ -62,7 +62,7 @@ public final class HttpResponse {
         for (String key : responseHeaders.keySet()) {
             response.append(key).append(": ").append(responseHeaders.get(key)).append(" ").append("\r\n");
         }
-        response.append("\r\n").append(responseBody).append("\r\n");
+        response.append("\r\n").append(responseBody);
 
         return response.toString();
     }
