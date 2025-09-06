@@ -12,12 +12,13 @@ public final class HttpResponse {
     }
 
     public void send200(final String responseBody) throws IOException {
-        String http = makeResponse(ResponseStatus.OK, "html", responseBody);
+        String http = parseResponse(ResponseStatus.OK, "html", responseBody);
         outputStream.write(http.getBytes());
         outputStream.flush();
     }
 
     public String makeResponse(final ResponseStatus status, final String contentType, final String responseBody) {
+    private String parseResponse(final ResponseStatus status, final String contentType, final String responseBody) {
         return String.join("\r\n",
             "HTTP/1.1 " + status.parseStatusLine(),
             "Content-Type: text/" + contentType + ";charset=utf-8 ",
