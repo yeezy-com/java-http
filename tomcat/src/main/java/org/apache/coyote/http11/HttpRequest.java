@@ -14,14 +14,15 @@ public final class HttpRequest {
 
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
+    private final RequestHeader requestHeader;
     private final Map<String, String> params;
-    private final RequestLine requestLine;
 
     public HttpRequest(final InputStream inputStream) {
         try {
             final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String requestLine = bufferedReader.readLine();
             log.info("{}", requestLine);
+            this.requestHeader = new RequestHeader(bufferedReader);
 
             this.requestLine = new RequestLine(requestLine);
             this.params = getQueryStrings();
