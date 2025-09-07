@@ -59,6 +59,31 @@ public class Http11Processor implements Runnable, Processor {
                     log.info("사용자 회원가입 완료: {}", newUser.getAccount());
 
                     httpResponse.send302("/index.html", ContentType.HTML, "");
+                    return;
+                }
+
+                if ("/login".equals(httpRequest.path())) {
+                    String account = httpRequest.getBody("account");
+                    String password = httpRequest.getBody("password");
+
+                    if (account != null && password != null) {
+                        Optional<User> user = InMemoryUserRepository.findByAccount(account);
+                        if (user.isPresent() && user.get().checkPassword(password)) {
+                            log.info("{}", user.get());
+
+                            httpResponse.send302(
+                                "/index.html",
+                                ContentType.HTML,
+                                ""
+                            );
+                        } else {
+                            log.info("아이디 또는 비밀번호가 다릅니다.");
+                            httpResponse.send401(
+                                ContentType.HTML,
+                                new String(staticFileLoader.readAllFileWithUri("/401.html"))
+                            );
+                        }
+                    }
                 }
             }
         } catch (IOException | UncheckedServletException e) {
@@ -73,28 +98,6 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         if ("/login".equals(httpRequest.path())) {
-            String account = httpRequest.getParam("account");
-            String password = httpRequest.getParam("password");
-
-            if (account != null && password != null) {
-                Optional<User> user = InMemoryUserRepository.findByAccount(account);
-                if (user.isPresent() && user.get().checkPassword(password)) {
-                    log.info("{}", user.get());
-
-                    httpResponse.send302(
-                        "/index.html",
-                        ContentType.HTML,
-                        ""
-                    );
-                } else {
-                    log.info("아이디 또는 비밀번호가 다릅니다.");
-                    httpResponse.send401(
-                        ContentType.HTML,
-                        new String(staticFileLoader.readAllFileWithUri("/401.html"))
-                    );
-                }
-            }
-
             httpResponse.send200(
                 ContentType.HTML,
                 new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
