@@ -5,6 +5,9 @@ public class RequestLine {
     private final String uri;
 
     public RequestLine(final String requestLine) {
+        if (requestLine == null || requestLine.isEmpty()) {
+            throw new UnsupportedOperationException("지원하지 않는 프로토콜입니다.");
+        }
         String[] requestLineToken = requestLine.split(" ");
         validateRequestLineIsStandard(requestLineToken);
 
@@ -16,10 +19,6 @@ public class RequestLine {
         if (requestLineToken.length != 3) {
             throw new IllegalArgumentException("잘못된 HTTP 요청입니다.");
         }
-    }
-
-    public RequestMethod getMethod() {
-        return method;
     }
 
     public String getUri() {
