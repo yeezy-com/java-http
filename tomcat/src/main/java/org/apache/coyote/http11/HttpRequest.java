@@ -54,6 +54,10 @@ public final class HttpRequest {
         return params.get(key);
     }
 
+    public String getBody(final String key) {
+        return requestBody.getBody(key);
+    }
+
     public String path() {
         int index = requestHeader.getUri().indexOf("?");
         if (index == -1) {

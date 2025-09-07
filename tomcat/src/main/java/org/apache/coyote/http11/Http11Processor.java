@@ -41,7 +41,25 @@ public class Http11Processor implements Runnable, Processor {
             }
 
             if (httpRequest.isPostMethod()) {
+                if ("/register".equals(httpRequest.path())) {
+                    String account = httpRequest.getBody("account");
+                    if (account == null || account.isEmpty()) {
+                        throw new IllegalArgumentException("잘못된 아이디입니다.");
+                    }
 
+                    Optional<User> user = InMemoryUserRepository.findByAccount(account);
+                    if (user.isPresent()) {
+                        throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+                    }
+
+                    String password = httpRequest.getBody("password");
+                    String email = httpRequest.getBody("email");
+                    User newUser = new User(account, password, email);
+                    InMemoryUserRepository.save(newUser);
+                    log.info("사용자 회원가입 완료: {}", newUser.getAccount());
+
+                    httpResponse.send302("/index.html", ContentType.HTML, "");
+                }
             }
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
@@ -86,6 +104,7 @@ public class Http11Processor implements Runnable, Processor {
 
         if ("/register".equals(httpRequest.path())) {
             httpResponse.send200(ContentType.HTML, new String(staticFileLoader.readAllFileWithUri("/register.html")));
+            return;
         }
 
         int index = httpRequest.path().lastIndexOf(".");
