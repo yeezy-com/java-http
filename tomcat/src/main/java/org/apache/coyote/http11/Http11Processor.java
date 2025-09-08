@@ -60,6 +60,7 @@ public class Http11Processor implements Runnable, Processor {
         if ("/login".equals(httpRequest.path())) {
             if (httpRequest.existsKey("JSESSIONID")) {
                 httpResponse.send302("/index.html", "");
+                return;
             }
 
             httpResponse.send200(
