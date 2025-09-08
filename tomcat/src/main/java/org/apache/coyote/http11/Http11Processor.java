@@ -112,7 +112,7 @@ public class Http11Processor implements Runnable, Processor {
                 Optional<User> user = InMemoryUserRepository.findByAccount(account);
                 if (user.isPresent() && user.get().checkPassword(password)) {
                     final var session = httpRequest.getSession(true);
-                    session.setAttribute("user", user);
+                    session.setAttribute("user", user.get());
 
                     log.info("{}", user.get());
 
