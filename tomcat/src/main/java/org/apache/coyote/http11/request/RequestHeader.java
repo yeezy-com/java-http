@@ -40,8 +40,12 @@ public class RequestHeader {
         }
     }
 
-    public boolean existsKey(final String key) {
+    public boolean existsCookie(final String key) {
         return httpCookie.existsKey(key);
+    }
+
+    public HttpCookie getHttpCookie() {
+        return httpCookie;
     }
 
     public boolean isGet() {

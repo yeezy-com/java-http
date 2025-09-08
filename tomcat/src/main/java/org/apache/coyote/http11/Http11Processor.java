@@ -38,10 +38,6 @@ public class Http11Processor implements Runnable, Processor {
             HttpRequest httpRequest = new HttpRequest(inputStream);
             HttpResponse httpResponse = new HttpResponse(outputStream);
 
-            if (!httpRequest.existsKey("JSESSIONID")) {
-                httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID());
-            }
-
             if (httpRequest.isGetMethod()) {
                 getMethodHandle(httpRequest, httpResponse);
                 return;
@@ -62,6 +58,10 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         if ("/login".equals(httpRequest.path())) {
+            if (httpRequest.existsKey("JSESSIONID")) {
+                httpResponse.send302("/index.html", "");
+            }
+
             httpResponse.send200(
                 ContentType.HTML,
                 new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
@@ -99,7 +99,7 @@ public class Http11Processor implements Runnable, Processor {
             InMemoryUserRepository.save(newUser);
             log.info("사용자 회원가입 완료: {}", newUser.getAccount());
 
-            httpResponse.send302("/index.html", ContentType.HTML, "");
+            httpResponse.send302("/index.html", "");
             return;
         }
 
@@ -110,13 +110,14 @@ public class Http11Processor implements Runnable, Processor {
             if (account != null && password != null) {
                 Optional<User> user = InMemoryUserRepository.findByAccount(account);
                 if (user.isPresent() && user.get().checkPassword(password)) {
+                    final var session = httpRequest.getSession(true);
+                    session.setAttribute("user", user);
+
+                    httpResponse.addHeader("Cookie", HttpCookie.ofJSessionId(session.getId()));
                     log.info("{}", user.get());
 
-                    httpResponse.send302(
-                        "/index.html",
-                        ContentType.HTML,
-                        ""
-                    );
+                    httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID());
+                    httpResponse.send302("/index.html", "");
                 } else {
                     log.info("아이디 또는 비밀번호가 다릅니다.");
                     httpResponse.send401(

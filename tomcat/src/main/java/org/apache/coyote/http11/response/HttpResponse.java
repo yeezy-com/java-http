@@ -22,9 +22,9 @@ public final class HttpResponse {
         sendResponse(http);
     }
 
-    public void send302(final String location, final ContentType contentType, final String responseBody)
+    public void send302(final String location, final String responseBody)
         throws IOException {
-        addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
+        addHeader("Content-Type", "text/html;charset=utf-8");
         addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
         addHeader("Location", location);
         String http = parseResponse(ResponseStatus.FOUND, responseBody);

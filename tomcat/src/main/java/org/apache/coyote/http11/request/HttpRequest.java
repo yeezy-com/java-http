@@ -5,10 +5,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.coyote.http11.session.Manager;
+import org.apache.coyote.http11.session.Session;
+import org.apache.coyote.http11.session.SessionManager;
 
 public final class HttpRequest {
 
+    private final Manager manager = SessionManager.getInstance();
     private final Map<String, String> params = new ConcurrentHashMap<>();
     private final RequestHeader requestHeader;
     private final RequestBody requestBody;
@@ -72,6 +77,21 @@ public final class HttpRequest {
     }
 
     public boolean existsKey(final String key) {
-        return requestHeader.existsKey(key);
+        return requestHeader.existsCookie(key);
+    }
+
+    public Session getSession(boolean is) {
+        if (requestHeader.existsCookie("JSESSIONID")) {
+            String jsessionid = requestHeader.getHttpCookie().getValue("JSESSIONID");
+            return manager.findSession(jsessionid);
+        }
+
+        if (is) {
+            String id = UUID.randomUUID().toString();
+            manager.add(new Session(id));
+            return manager.findSession(id);
+        }
+
+        return null;
     }
 }
