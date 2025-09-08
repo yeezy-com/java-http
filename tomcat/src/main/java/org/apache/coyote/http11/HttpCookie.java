@@ -17,8 +17,8 @@ public class HttpCookie {
 
         String[] cookies = rawCookie.split(";");
         for (String cookie : cookies) {
-            String key = cookie.split("=")[0];
-            String value = cookie.split("=")[1];
+            String key = cookie.split("=")[0].trim();
+            String value = cookie.split("=")[1].trim();
 
             this.cookies.put(key, value);
         }

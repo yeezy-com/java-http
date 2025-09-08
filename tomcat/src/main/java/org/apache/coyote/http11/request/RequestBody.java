@@ -32,11 +32,11 @@ public class RequestBody {
         for (String keyValue : requestBody.split("&")) {
             String[] keyValues = keyValue.split("=");
             if (keyValues.length == 1) {
-                body.put(keyValues[0], "");
+                body.put(keyValues[0].trim(), "");
                 continue;
             }
 
-            body.put(keyValues[0], keyValues[1]);
+            body.put(keyValues[0].trim(), keyValues[1].trim());
         }
     }
 
