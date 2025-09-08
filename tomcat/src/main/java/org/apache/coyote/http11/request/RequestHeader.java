@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.coyote.http11.HttpCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,7 @@ public class RequestHeader {
     private static final Logger log = LoggerFactory.getLogger(RequestHeader.class);
 
     private final Map<String, String> headers = new ConcurrentHashMap<>();
+    private final HttpCookie httpCookie = new HttpCookie();
     private final RequestLine requestLine;
 
     public RequestHeader(final BufferedReader bufferedReader) {
@@ -26,11 +28,20 @@ public class RequestHeader {
                 String key = tmpHeader.substring(0, index).trim();
                 String value = tmpHeader.substring(index + 1).trim();
 
+                if (key.equals("Cookie")) {
+                    this.httpCookie.addCookie(value);
+                    continue;
+                }
+
                 headers.put(key, value);
             }
         } catch (IOException e) {
             throw new RuntimeException("요청을 처리하는데 실패했습니다.");
         }
+    }
+
+    public boolean existsKey(final String key) {
+        return httpCookie.existsKey(key);
     }
 
     public boolean isGet() {

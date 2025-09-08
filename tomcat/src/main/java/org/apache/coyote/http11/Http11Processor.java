@@ -6,6 +6,7 @@ import com.techcourse.model.User;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Optional;
+import java.util.UUID;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
@@ -36,6 +37,10 @@ public class Http11Processor implements Runnable, Processor {
              final var outputStream = connection.getOutputStream()) {
             HttpRequest httpRequest = new HttpRequest(inputStream);
             HttpResponse httpResponse = new HttpResponse(outputStream);
+
+            if (!httpRequest.existsKey("JSESSIONID")) {
+                httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID());
+            }
 
             if (httpRequest.isGetMethod()) {
                 getMethodHandle(httpRequest, httpResponse);

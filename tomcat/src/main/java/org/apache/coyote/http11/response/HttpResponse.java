@@ -43,7 +43,7 @@ public final class HttpResponse {
         outputStream.flush();
     }
 
-    private void addHeader(String key, String value) {
+    public void addHeader(String key, String value) {
         responseHeaders.put(key, value);
     }
 

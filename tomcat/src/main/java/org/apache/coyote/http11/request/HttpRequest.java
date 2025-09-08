@@ -70,4 +70,8 @@ public final class HttpRequest {
     public boolean isPostMethod() {
         return requestHeader.isPost();
     }
+
+    public boolean existsKey(final String key) {
+        return requestHeader.existsKey(key);
+    }
 }
