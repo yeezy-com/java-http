@@ -31,6 +31,13 @@ public class HttpResponse {
         sendResponse(http);
     }
 
+    public void send400(final ContentType contentType, final String responseBody) throws IOException {
+        addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
+        addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
+        String http = parseResponse(ResponseStatus.BAD_REQUEST, responseBody);
+        sendResponse(http);
+    }
+
     public void send401(final ContentType contentType, final String responseBody) throws IOException {
         addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
         addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));

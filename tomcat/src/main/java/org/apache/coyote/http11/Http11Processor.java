@@ -125,6 +125,8 @@ public class Http11Processor implements Runnable, Processor {
                         new String(staticFileLoader.readAllFileWithUri("/401.html"))
                     );
                 }
+
+                httpResponse.send400(ContentType.HTML, "아이디, 비밀번호는 필수입니다.");
             }
         }
     }
