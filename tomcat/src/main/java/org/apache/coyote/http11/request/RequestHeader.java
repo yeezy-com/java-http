@@ -28,7 +28,7 @@ public class RequestHeader {
                 String key = tmpHeader.substring(0, index).trim();
                 String value = tmpHeader.substring(index + 1).trim();
 
-                if (key.equals("Cookie")) {
+                if (key.equalsIgnoreCase("cookie")) {
                     this.httpCookie.addCookie(value);
                     continue;
                 }
