@@ -25,7 +25,7 @@ public class HttpCookie {
     }
 
     public static String ofJSessionId(String jSessionId) {
-        return "JESSIONID=" + jSessionId;
+        return "JSESSIONID=" + jSessionId;
     }
 
     public boolean existsKey(final String key) {
