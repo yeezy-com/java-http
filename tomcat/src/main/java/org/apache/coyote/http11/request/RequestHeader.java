@@ -25,6 +25,10 @@ public class RequestHeader {
             String tmpHeader = "";
             while (!(tmpHeader = bufferedReader.readLine()).isEmpty()) {
                 int index = tmpHeader.indexOf(":");
+                if (index == -1) {
+                    throw new IllegalArgumentException("잘못된 형식의 HTTP 헤더입니다.");
+                }
+
                 String key = tmpHeader.substring(0, index).trim();
                 String value = tmpHeader.substring(index + 1).trim();
 
