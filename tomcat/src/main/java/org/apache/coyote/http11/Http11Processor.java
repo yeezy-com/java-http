@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +111,7 @@ public class Http11Processor implements Runnable, Processor {
             if (account != null && password != null) {
                 Optional<User> user = InMemoryUserRepository.findByAccount(account);
                 if (user.isPresent() && user.get().checkPassword(password)) {
-                    final var session = httpRequest.getSession(true);
+                    final Session session = httpRequest.getSession(true);
                     session.setAttribute("user", user.get());
 
                     log.info("{}", user.get());
