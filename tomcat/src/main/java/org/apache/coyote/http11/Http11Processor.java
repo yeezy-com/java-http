@@ -6,7 +6,6 @@ import com.techcourse.model.User;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Optional;
-import java.util.UUID;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
@@ -116,7 +115,7 @@ public class Http11Processor implements Runnable, Processor {
 
                     log.info("{}", user.get());
 
-                    httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID());
+                    httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + session.getId());
                     httpResponse.send302("/index.html", "");
                 } else {
                     log.info("아이디 또는 비밀번호가 다릅니다.");
