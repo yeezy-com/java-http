@@ -48,50 +48,7 @@ public class Http11Processor implements Runnable, Processor {
             }
 
             if (httpRequest.isPostMethod()) {
-                if ("/register".equals(httpRequest.path())) {
-                    String account = httpRequest.getBody("account");
-                    if (account == null || account.isEmpty()) {
-                        throw new IllegalArgumentException("잘못된 아이디입니다.");
-                    }
-
-                    Optional<User> user = InMemoryUserRepository.findByAccount(account);
-                    if (user.isPresent()) {
-                        throw new IllegalArgumentException("이미 존재하는 회원입니다.");
-                    }
-
-                    String password = httpRequest.getBody("password");
-                    String email = httpRequest.getBody("email");
-                    User newUser = new User(account, password, email);
-                    InMemoryUserRepository.save(newUser);
-                    log.info("사용자 회원가입 완료: {}", newUser.getAccount());
-
-                    httpResponse.send302("/index.html", ContentType.HTML, "");
-                    return;
-                }
-
-                if ("/login".equals(httpRequest.path())) {
-                    String account = httpRequest.getBody("account");
-                    String password = httpRequest.getBody("password");
-
-                    if (account != null && password != null) {
-                        Optional<User> user = InMemoryUserRepository.findByAccount(account);
-                        if (user.isPresent() && user.get().checkPassword(password)) {
-                            log.info("{}", user.get());
-
-                            httpResponse.send302(
-                                "/index.html",
-                                ContentType.HTML,
-                                ""
-                            );
-                        } else {
-                            log.info("아이디 또는 비밀번호가 다릅니다.");
-                            httpResponse.send401(
-                                ContentType.HTML,
-                                new String(staticFileLoader.readAllFileWithUri("/401.html"))
-                            );
-                        }
-                    }
-                }
+                postMethodHandle(httpRequest, httpResponse);
             }
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
@@ -122,5 +79,52 @@ public class Http11Processor implements Runnable, Processor {
 
         String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.path()));
         httpResponse.send200(ContentType.valueOf(extension.toUpperCase()), staticFile);
+    }
+
+    private void postMethodHandle(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
+        if ("/register".equals(httpRequest.path())) {
+            String account = httpRequest.getBody("account");
+            if (account == null || account.isEmpty()) {
+                throw new IllegalArgumentException("잘못된 아이디입니다.");
+            }
+
+            Optional<User> user = InMemoryUserRepository.findByAccount(account);
+            if (user.isPresent()) {
+                throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            }
+
+            String password = httpRequest.getBody("password");
+            String email = httpRequest.getBody("email");
+            User newUser = new User(account, password, email);
+            InMemoryUserRepository.save(newUser);
+            log.info("사용자 회원가입 완료: {}", newUser.getAccount());
+
+            httpResponse.send302("/index.html", ContentType.HTML, "");
+            return;
+        }
+
+        if ("/login".equals(httpRequest.path())) {
+            String account = httpRequest.getBody("account");
+            String password = httpRequest.getBody("password");
+
+            if (account != null && password != null) {
+                Optional<User> user = InMemoryUserRepository.findByAccount(account);
+                if (user.isPresent() && user.get().checkPassword(password)) {
+                    log.info("{}", user.get());
+
+                    httpResponse.send302(
+                        "/index.html",
+                        ContentType.HTML,
+                        ""
+                    );
+                } else {
+                    log.info("아이디 또는 비밀번호가 다릅니다.");
+                    httpResponse.send401(
+                        ContentType.HTML,
+                        new String(staticFileLoader.readAllFileWithUri("/401.html"))
+                    );
+                }
+            }
+        }
     }
 }
