@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.coyote.http11.ContentType;
 
-public final class HttpResponse {
+public class HttpResponse {
     private final Map<String, String> responseHeaders = new HashMap<>();
     private final OutputStream outputStream;
 

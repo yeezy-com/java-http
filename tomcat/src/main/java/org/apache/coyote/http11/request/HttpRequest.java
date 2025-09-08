@@ -3,6 +3,7 @@ package org.apache.coyote.http11.request;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -11,7 +12,7 @@ import org.apache.coyote.http11.session.Manager;
 import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
 
-public final class HttpRequest {
+public class HttpRequest {
 
     private final Manager manager = SessionManager.getInstance();
     private final Map<String, String> params = new HashMap<>();
@@ -19,7 +20,9 @@ public final class HttpRequest {
     private final RequestBody requestBody;
 
     public HttpRequest(final InputStream inputStream) {
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        final BufferedReader bufferedReader = new BufferedReader(
+            new InputStreamReader(inputStream, StandardCharsets.UTF_8)
+        );
         this.requestHeader = new RequestHeader(bufferedReader);
         this.requestBody = new RequestBody(requestHeader, bufferedReader);
         parseQueryString();
