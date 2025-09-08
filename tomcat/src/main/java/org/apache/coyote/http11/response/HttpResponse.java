@@ -3,12 +3,12 @@ package org.apache.coyote.http11.response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.coyote.http11.ContentType;
 
 public final class HttpResponse {
-    private final Map<String, String> responseHeaders = new ConcurrentHashMap<>();
+    private final Map<String, String> responseHeaders = new HashMap<>();
     private final OutputStream outputStream;
 
     public HttpResponse(OutputStream outputStream) {

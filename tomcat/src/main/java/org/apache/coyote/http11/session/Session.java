@@ -1,13 +1,13 @@
 package org.apache.coyote.http11.session;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Session {
 
     private final String id;
-    
-    private Map<String, Object> values = new ConcurrentHashMap<>();
+
+    private Map<String, Object> values = new HashMap<>();
 
     public Session(final String id) {
         this.id = id;

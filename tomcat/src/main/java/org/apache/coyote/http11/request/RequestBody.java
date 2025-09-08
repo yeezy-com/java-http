@@ -2,12 +2,12 @@ package org.apache.coyote.http11.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestBody {
 
-    private final Map<String, String> body = new ConcurrentHashMap<>();
+    private final Map<String, String> body = new HashMap<>();
 
     public RequestBody(final RequestHeader requestHeader, final BufferedReader bufferedReader) {
         try {

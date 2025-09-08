@@ -3,10 +3,10 @@ package org.apache.coyote.http11.request;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.coyote.http11.session.Manager;
 import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
@@ -14,7 +14,7 @@ import org.apache.coyote.http11.session.SessionManager;
 public final class HttpRequest {
 
     private final Manager manager = SessionManager.getInstance();
-    private final Map<String, String> params = new ConcurrentHashMap<>();
+    private final Map<String, String> params = new HashMap<>();
     private final RequestHeader requestHeader;
     private final RequestBody requestBody;
 

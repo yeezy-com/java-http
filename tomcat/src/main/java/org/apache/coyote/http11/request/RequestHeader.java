@@ -2,8 +2,8 @@ package org.apache.coyote.http11.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.coyote.http11.HttpCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ public class RequestHeader {
 
     private static final Logger log = LoggerFactory.getLogger(RequestHeader.class);
 
-    private final Map<String, String> headers = new ConcurrentHashMap<>();
+    private final Map<String, String> headers = new HashMap<>();
     private final HttpCookie httpCookie = new HttpCookie();
     private final RequestLine requestLine;
 
