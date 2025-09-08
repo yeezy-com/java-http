@@ -2,17 +2,16 @@ package org.apache.coyote.http11.request;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestBody {
 
-    private final Map<String, String> body;
+    private final Map<String, String> body = new ConcurrentHashMap<>();
 
     public RequestBody(final RequestHeader requestHeader, final BufferedReader bufferedReader) {
         try {
             if (requestHeader.isGet()) {
-                this.body = new HashMap<>();
                 return;
             }
 
@@ -22,16 +21,14 @@ public class RequestBody {
             bufferedReader.read(buffer, 0, contentLength);
             String requestBody = new String(buffer);
 
-            this.body = parseBody(requestBody);
+            parseBody(requestBody);
         } catch (IOException e) {
             throw new RuntimeException("요청 처리 중 예외가 발생했습니다.");
         }
     }
 
     // TODO: Content-Type에 따라 파싱 방법 다르게 적용하기
-    private Map<String, String> parseBody(final String requestBody) {
-        Map<String, String> body = new HashMap<>();
-
+    private void parseBody(final String requestBody) {
         for (String keyValue : requestBody.split("&")) {
             String[] keyValues = keyValue.split("=");
             if (keyValues.length == 1) {
@@ -41,8 +38,6 @@ public class RequestBody {
 
             body.put(keyValues[0], keyValues[1]);
         }
-
-        return body;
     }
 
     public String getBody(final String key) {

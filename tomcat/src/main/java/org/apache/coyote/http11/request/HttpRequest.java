@@ -3,42 +3,38 @@ package org.apache.coyote.http11.request;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class HttpRequest {
 
+    private final Map<String, String> params = new ConcurrentHashMap<>();
     private final RequestHeader requestHeader;
     private final RequestBody requestBody;
-    private final Map<String, String> params;
 
     public HttpRequest(final InputStream inputStream) {
         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         this.requestHeader = new RequestHeader(bufferedReader);
         this.requestBody = new RequestBody(requestHeader, bufferedReader);
-        this.params = getQueryStrings();
+        parseQueryString();
     }
 
-    private Map<String, String> getQueryStrings() {
-        Map<String, String> queryStrings = new HashMap<>();
-
+    private void parseQueryString() {
         Optional<String> queryString = getQueryString();
         if (queryString.isEmpty()) {
-            return new HashMap<>();
+            return;
         }
 
         for (String keyValue : queryString.get().split("&")) {
             String[] keyValues = keyValue.split("=");
             if (keyValues.length == 1) {
-                queryStrings.put(keyValues[0], "");
+                params.put(keyValues[0], "");
                 continue;
             }
 
-            queryStrings.put(keyValues[0], keyValues[1]);
+            params.put(keyValues[0], keyValues[1]);
         }
-
-        return queryStrings;
     }
 
     private Optional<String> getQueryString() {
