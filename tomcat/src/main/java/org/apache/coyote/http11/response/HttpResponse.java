@@ -57,7 +57,7 @@ public class HttpResponse {
     private String parseResponse(final ResponseStatus status,
                                  final String responseBody
     ) {
-        StringBuilder response = new StringBuilder("HTTP/1.1 " + status.parseStatusLine() + "\r\n");
+        StringBuilder response = new StringBuilder("HTTP/1.1 " + status.parseStatusLine() + " \r\n");
         for (String key : responseHeaders.keySet()) {
             response.append(key).append(": ").append(responseHeaders.get(key)).append(" ").append("\r\n");
         }
