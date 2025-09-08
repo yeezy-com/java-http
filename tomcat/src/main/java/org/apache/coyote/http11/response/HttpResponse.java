@@ -1,10 +1,11 @@
-package org.apache.coyote.http11;
+package org.apache.coyote.http11.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.coyote.http11.ContentType;
 
 public final class HttpResponse {
     private Map<String, String> responseHeaders = new HashMap<>();
