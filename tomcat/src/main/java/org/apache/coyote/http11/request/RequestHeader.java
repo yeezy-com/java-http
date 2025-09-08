@@ -67,4 +67,8 @@ public class RequestHeader {
     public String getUri() {
         return requestLine.getUri();
     }
+
+    public String getParam(final String key) {
+        return requestLine.getParam(key);
+    }
 }
