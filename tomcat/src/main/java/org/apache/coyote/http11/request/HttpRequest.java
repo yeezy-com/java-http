@@ -83,13 +83,13 @@ public class HttpRequest {
         return requestHeader.existsCookie(key);
     }
 
-    public Session getSession(boolean is) {
+    public Session getSession(boolean status) throws IOException {
         if (requestHeader.existsCookie("JSESSIONID")) {
             String jsessionid = requestHeader.getHttpCookie().getValue("JSESSIONID");
             return manager.findSession(jsessionid);
         }
 
-        if (is) {
+        if (status) {
             String id = UUID.randomUUID().toString();
             manager.add(new Session(id));
             return manager.findSession(id);

@@ -2,6 +2,7 @@ package org.apache.coyote.http11.session;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.catalina.Manager;
 
 public class SessionManager implements Manager {
 
@@ -22,8 +23,8 @@ public class SessionManager implements Manager {
     }
 
     @Override
-    public void remove(final String id) {
-        SESSIONS.remove(id);
+    public void remove(final Session session) {
+        SESSIONS.remove(session.getId());
     }
 
     private SessionManager() {

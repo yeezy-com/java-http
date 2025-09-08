@@ -3,6 +3,7 @@ package org.apache.coyote.http11.request;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import org.apache.coyote.http11.session.Session;
 import org.apache.coyote.http11.session.SessionManager;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class HttpRequestTest {
     }
 
     @Test
-    void getSession은_세션을_반환한다() {
+    void getSession은_세션을_반환한다() throws IOException {
         final var sessionManager = SessionManager.getInstance();
         sessionManager.add(new Session("123"));
         final var testHtml = """
@@ -59,7 +60,7 @@ class HttpRequestTest {
     }
 
     @Test
-    void 세션이_없을때_getSession_true시_새로운_세션을_생성한다() {
+    void 세션이_없을때_getSession_true시_새로운_세션을_생성한다() throws IOException {
         final var sessionManager = SessionManager.getInstance();
         final var testHtml = """
             GET /test HTTP/1.1\r
@@ -76,7 +77,7 @@ class HttpRequestTest {
     }
 
     @Test
-    void 세션이_없을때_getSession_false시_새로운_세션을_생성하지_않는다() {
+    void 세션이_없을때_getSession_false시_새로운_세션을_생성하지_않는다() throws IOException {
         final var testHtml = """
             GET /test HTTP/1.1\r
             \r
