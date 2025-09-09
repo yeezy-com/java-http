@@ -76,6 +76,9 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         int index = httpRequest.getPath().lastIndexOf(".");
+        if (index == -1) {
+            throw new IllegalArgumentException("잘못된 정적 파일 요청입니다.");
+        }
         String extension = httpRequest.getPath().substring(index + 1);
 
         String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath()));
