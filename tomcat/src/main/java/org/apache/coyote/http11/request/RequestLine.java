@@ -27,7 +27,7 @@ public class RequestLine {
             String[] requestLineToken = requestLine.split(" ");
             validateRequestLineIsStandard(requestLineToken);
 
-            this.method = RequestMethod.valueOf(requestLineToken[0].toUpperCase());
+            this.method = RequestMethod.valueOf(requestLineToken[0]);
             this.uri = requestLineToken[1];
             parseQueryString();
         } catch (IOException e) {
