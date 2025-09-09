@@ -46,10 +46,6 @@ public class HttpRequest {
         return requestLine.isPost();
     }
 
-    public boolean existsKey(final String key) {
-        return requestHeader.existsCookie(key);
-    }
-
     public Session getSession(boolean status) throws IOException {
         if (requestHeader.existsCookie("JSESSIONID")) {
             String jsessionid = requestHeader.getHttpCookie().getValue("JSESSIONID");
