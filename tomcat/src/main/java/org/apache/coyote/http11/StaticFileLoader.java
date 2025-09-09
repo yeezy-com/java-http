@@ -11,7 +11,7 @@ public class StaticFileLoader {
     private File findFileWithUri(final String fileUri) {
         URL systemResource = ClassLoader.getSystemResource(PREFIX + fileUri);
         if (systemResource == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("정적 파일을 찾지 못했습니다.");
         }
 
         return new File(systemResource.getFile());

@@ -3,14 +3,13 @@ package org.apache.coyote.http11;
 import com.techcourse.db.InMemoryUserRepository;
 import com.techcourse.exception.UncheckedServletException;
 import com.techcourse.model.User;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import org.apache.coyote.Processor;
+import org.apache.coyote.http11.request.HttpRequest;
+import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,41 +35,102 @@ public class Http11Processor implements Runnable, Processor {
     public void process(final Socket connection) {
         try (final var inputStream = connection.getInputStream();
              final var outputStream = connection.getOutputStream()) {
+            HttpRequest httpRequest = new HttpRequest(inputStream);
+            HttpResponse httpResponse = new HttpResponse(outputStream);
 
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String inputLine = bufferedReader.readLine();
+            if (httpRequest.isGetMethod()) {
+                getMethodHandle(httpRequest, httpResponse);
+                return;
+            }
 
-            HttpResponse response = handle(new HttpRequest(inputLine.split(" ")[0], inputLine.split(" ")[1]));
-
-            outputStream.write(response.serveResponse().getBytes());
-            outputStream.flush();
+            if (httpRequest.isPostMethod()) {
+                postMethodHandle(httpRequest, httpResponse);
+            }
         } catch (IOException | UncheckedServletException e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private HttpResponse handle(final HttpRequest httpRequest) throws IOException {
-        if (httpRequest.uri().equals("/")) {
-            return new HttpResponse("html", "Hello world!");
+    private void getMethodHandle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
+        if ("/".equals(httpRequest.getPath())) {
+            httpResponse.send200(ContentType.HTML, "Hello world!");
+            return;
         }
 
-        if (httpRequest.uri().startsWith("/login")) {
-            Map<String, String> queryStrings = httpRequest.getQueryStrings();
-            String account = queryStrings.getOrDefault("account", "");
+        if ("/login".equals(httpRequest.getPath())) {
+            if (httpRequest.getSession(false) != null) {
+                httpResponse.send302("/index.html", "");
+                return;
+            }
 
-            Optional<User> user = InMemoryUserRepository.findByAccount(account);
-            log.info("{}", user.orElse(null));
-
-            return new HttpResponse(
-                "html",
+            httpResponse.send200(
+                ContentType.HTML,
                 new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath() + ".html"))
             );
+            return;
         }
 
-        int extensionIndex = httpRequest.uri().lastIndexOf(".");
-        String extension = httpRequest.uri().substring(extensionIndex + 1);
+        if ("/register".equals(httpRequest.getPath())) {
+            httpResponse.send200(ContentType.HTML, new String(staticFileLoader.readAllFileWithUri("/register.html")));
+            return;
+        }
 
-        String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.uri()));
-        return new HttpResponse(extension, staticFile);
+        int index = httpRequest.getPath().lastIndexOf(".");
+        if (index == -1) {
+            throw new IllegalArgumentException("잘못된 정적 파일 요청입니다.");
+        }
+        String extension = httpRequest.getPath().substring(index + 1);
+
+        String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath()));
+        httpResponse.send200(ContentType.valueOf(extension.toUpperCase()), staticFile);
+    }
+
+    private void postMethodHandle(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
+        if ("/register".equals(httpRequest.getPath())) {
+            String account = httpRequest.getBody("account");
+            if (account == null || account.isEmpty()) {
+                throw new IllegalArgumentException("잘못된 아이디입니다.");
+            }
+
+            Optional<User> user = InMemoryUserRepository.findByAccount(account);
+            if (user.isPresent()) {
+                throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            }
+
+            String password = httpRequest.getBody("password");
+            String email = httpRequest.getBody("email");
+            User newUser = new User(account, password, email);
+            InMemoryUserRepository.save(newUser);
+            log.info("사용자 회원가입 완료: {}", newUser.getAccount());
+
+            httpResponse.send302("/index.html", "");
+            return;
+        }
+
+        if ("/login".equals(httpRequest.getPath())) {
+            String account = httpRequest.getBody("account");
+            String password = httpRequest.getBody("password");
+
+            if (account != null && password != null) {
+                Optional<User> user = InMemoryUserRepository.findByAccount(account);
+                if (user.isPresent() && user.get().checkPassword(password)) {
+                    final Session session = httpRequest.getSession(true);
+                    session.setAttribute("user", user.get());
+
+                    log.info("{}", user.get());
+
+                    httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + session.getId());
+                    httpResponse.send302("/index.html", "");
+                } else {
+                    log.info("아이디 또는 비밀번호가 다릅니다.");
+                    httpResponse.send401(
+                        ContentType.HTML,
+                        new String(staticFileLoader.readAllFileWithUri("/401.html"))
+                    );
+                }
+
+                httpResponse.send400(ContentType.HTML, "아이디, 비밀번호는 필수입니다.");
+            }
+        }
     }
 }
