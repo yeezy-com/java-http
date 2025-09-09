@@ -52,12 +52,12 @@ public class Http11Processor implements Runnable, Processor {
     }
 
     private void getMethodHandle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
-        if ("/".equals(httpRequest.path())) {
+        if ("/".equals(httpRequest.getPath())) {
             httpResponse.send200(ContentType.HTML, "Hello world!");
             return;
         }
 
-        if ("/login".equals(httpRequest.path())) {
+        if ("/login".equals(httpRequest.getPath())) {
             if (httpRequest.existsKey("JSESSIONID")) {
                 httpResponse.send302("/index.html", "");
                 return;
@@ -65,25 +65,25 @@ public class Http11Processor implements Runnable, Processor {
 
             httpResponse.send200(
                 ContentType.HTML,
-                new String(staticFileLoader.readAllFileWithUri(httpRequest.path() + ".html"))
+                new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath() + ".html"))
             );
             return;
         }
 
-        if ("/register".equals(httpRequest.path())) {
+        if ("/register".equals(httpRequest.getPath())) {
             httpResponse.send200(ContentType.HTML, new String(staticFileLoader.readAllFileWithUri("/register.html")));
             return;
         }
 
-        int index = httpRequest.path().lastIndexOf(".");
-        String extension = httpRequest.path().substring(index + 1);
+        int index = httpRequest.getPath().lastIndexOf(".");
+        String extension = httpRequest.getPath().substring(index + 1);
 
-        String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.path()));
+        String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath()));
         httpResponse.send200(ContentType.valueOf(extension.toUpperCase()), staticFile);
     }
 
     private void postMethodHandle(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
-        if ("/register".equals(httpRequest.path())) {
+        if ("/register".equals(httpRequest.getPath())) {
             String account = httpRequest.getBody("account");
             if (account == null || account.isEmpty()) {
                 throw new IllegalArgumentException("잘못된 아이디입니다.");
@@ -104,7 +104,7 @@ public class Http11Processor implements Runnable, Processor {
             return;
         }
 
-        if ("/login".equals(httpRequest.path())) {
+        if ("/login".equals(httpRequest.getPath())) {
             String account = httpRequest.getBody("account");
             String password = httpRequest.getBody("password");
 

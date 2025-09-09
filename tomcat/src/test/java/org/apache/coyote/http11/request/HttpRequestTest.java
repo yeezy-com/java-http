@@ -36,7 +36,7 @@ class HttpRequestTest {
         final var inputStream = new ByteArrayInputStream(testHtml.getBytes());
         final var request = new HttpRequest(inputStream);
 
-        String path = request.path();
+        String path = request.getPath();
 
         assertThat(path).isEqualTo("/test");
     }

@@ -14,14 +14,9 @@ public class RequestHeader {
 
     private final Map<String, String> headers = new HashMap<>();
     private final HttpCookie httpCookie = new HttpCookie();
-    private final RequestLine requestLine;
 
     public RequestHeader(final BufferedReader bufferedReader) {
         try {
-            String requestLine = bufferedReader.readLine();
-            log.info("{}", requestLine);
-            this.requestLine = new RequestLine(requestLine);
-
             String tmpHeader = "";
             while (!(tmpHeader = bufferedReader.readLine()).isEmpty()) {
                 int index = tmpHeader.indexOf(":");
@@ -52,23 +47,7 @@ public class RequestHeader {
         return httpCookie;
     }
 
-    public boolean isGet() {
-        return requestLine.isGet();
-    }
-
-    public boolean isPost() {
-        return requestLine.isPost();
-    }
-
     public String getHeader(final String key) {
         return headers.get(key);
-    }
-
-    public String getUri() {
-        return requestLine.getUri();
-    }
-
-    public String getParam(final String key) {
-        return requestLine.getParam(key);
     }
 }

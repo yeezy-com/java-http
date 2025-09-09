@@ -9,9 +9,12 @@ public class RequestBody {
 
     private final Map<String, String> body = new HashMap<>();
 
-    public RequestBody(final RequestHeader requestHeader, final BufferedReader bufferedReader) {
+    public RequestBody(final RequestLine requestLine,
+                       final RequestHeader requestHeader,
+                       final BufferedReader bufferedReader
+    ) {
         try {
-            if (requestHeader.isGet()) {
+            if (requestLine.isGet()) {
                 return;
             }
 

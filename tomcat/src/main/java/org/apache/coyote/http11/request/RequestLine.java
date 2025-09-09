@@ -1,24 +1,38 @@
 package org.apache.coyote.http11.request;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestLine {
+
+    private static final Logger log = LoggerFactory.getLogger(RequestLine.class);
+
     private final Map<String, String> params = new HashMap<>();
     private final RequestMethod method;
     private final String uri;
 
-    public RequestLine(final String requestLine) {
-        if (requestLine == null || requestLine.isEmpty()) {
-            throw new UnsupportedOperationException("지원하지 않는 프로토콜입니다.");
-        }
-        String[] requestLineToken = requestLine.split(" ");
-        validateRequestLineIsStandard(requestLineToken);
+    public RequestLine(final BufferedReader bufferedReader) {
+        try {
+            String requestLine = bufferedReader.readLine();
+            log.info("{}", requestLine);
 
-        this.method = RequestMethod.valueOf(requestLineToken[0].toUpperCase());
-        this.uri = requestLineToken[1];
-        parseQueryString();
+            if (requestLine == null || requestLine.isEmpty()) {
+                throw new UnsupportedOperationException("지원하지 않는 프로토콜입니다.");
+            }
+            String[] requestLineToken = requestLine.split(" ");
+            validateRequestLineIsStandard(requestLineToken);
+
+            this.method = RequestMethod.valueOf(requestLineToken[0].toUpperCase());
+            this.uri = requestLineToken[1];
+            parseQueryString();
+        } catch (IOException e) {
+            throw new RuntimeException("요청 라인 파싱 중 오류가 발생했습니다.");
+        }
     }
 
     private void parseQueryString() {
@@ -59,6 +73,15 @@ public class RequestLine {
 
     public String getUri() {
         return uri;
+    }
+
+    public String getPath() {
+        int index = uri.indexOf("?");
+        if (index == -1) {
+            return uri;
+        }
+
+        return uri.substring(0, index);
     }
 
     public boolean isGet() {

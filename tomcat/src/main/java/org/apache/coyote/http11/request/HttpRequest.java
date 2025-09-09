@@ -13,6 +13,7 @@ import org.apache.coyote.http11.session.SessionManager;
 public class HttpRequest {
 
     private final Manager manager = SessionManager.getInstance();
+    private final RequestLine requestLine;
     private final RequestHeader requestHeader;
     private final RequestBody requestBody;
 
@@ -20,33 +21,29 @@ public class HttpRequest {
         final BufferedReader bufferedReader = new BufferedReader(
             new InputStreamReader(inputStream, StandardCharsets.UTF_8)
         );
+        this.requestLine = new RequestLine(bufferedReader);
         this.requestHeader = new RequestHeader(bufferedReader);
-        this.requestBody = new RequestBody(requestHeader, bufferedReader);
+        this.requestBody = new RequestBody(requestLine, requestHeader, bufferedReader);
     }
 
     public String getParam(final String key) {
-        return requestHeader.getParam(key);
+        return requestLine.getParam(key);
     }
 
     public String getBody(final String key) {
         return requestBody.getBody(key);
     }
 
-    public String path() {
-        int index = requestHeader.getUri().indexOf("?");
-        if (index == -1) {
-            return requestHeader.getUri();
-        }
-
-        return requestHeader.getUri().substring(0, index);
+    public String getPath() {
+        return requestLine.getPath();
     }
 
     public boolean isGetMethod() {
-        return requestHeader.isGet();
+        return requestLine.isGet();
     }
 
     public boolean isPostMethod() {
-        return requestHeader.isPost();
+        return requestLine.isPost();
     }
 
     public boolean existsKey(final String key) {
