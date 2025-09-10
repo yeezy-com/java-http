@@ -15,54 +15,54 @@ public class HttpResponse {
         this.outputStream = outputStream;
     }
 
-    public void send200(final ContentType contentType, final String responseBody) throws IOException {
-        addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
-        addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
-        String http = parseResponse(ResponseStatus.OK, responseBody);
-        sendResponse(http);
-    }
-
-    public void send302(final String location, final String responseBody)
-        throws IOException {
-        addHeader("Content-Type", "text/html;charset=utf-8");
-        addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
-        addHeader("Location", location);
-        String http = parseResponse(ResponseStatus.FOUND, responseBody);
-        sendResponse(http);
-    }
-
-    public void send400(final ContentType contentType, final String responseBody) throws IOException {
-        addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
-        addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
-        String http = parseResponse(ResponseStatus.BAD_REQUEST, responseBody);
-        sendResponse(http);
-    }
-
-    public void send401(final ContentType contentType, final String responseBody) throws IOException {
-        addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
-        addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
-        String http = parseResponse(ResponseStatus.UNAUTHORIZED, responseBody);
-        sendResponse(http);
-    }
-
-    private void sendResponse(String http) throws IOException {
-        outputStream.write(http.getBytes());
-        outputStream.flush();
-    }
-
     public void addHeader(String key, String value) {
         responseHeaders.put(key, value);
     }
 
-    private String parseResponse(final ResponseStatus status,
-                                 final String responseBody
-    ) {
-        StringBuilder response = new StringBuilder("HTTP/1.1 " + status.parseStatusLine() + " \r\n");
-        for (String key : responseHeaders.keySet()) {
-            response.append(key).append(": ").append(responseHeaders.get(key)).append(" ").append("\r\n");
-        }
+    public void sendResponse(final ResponseStatus responseStatus,
+                             final ContentType contentType,
+                             final String responseBody) throws IOException {
+        addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
+        addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
+        String http = parseResponse(responseStatus, responseBody);
+
+        writeOutputStream(http);
+    }
+
+    public void sendResponse(final ResponseStatus responseStatus) throws IOException {
+        addHeader("Content-Length", String.valueOf(0));
+        String http = parseResponse(responseStatus);
+
+        writeOutputStream(http);
+    }
+
+    private void writeOutputStream(String http) throws IOException {
+        outputStream.write(http.getBytes());
+        outputStream.flush();
+    }
+
+    private String parseResponse(final ResponseStatus status) {
+        StringBuilder response = parseResponseLine(status);
+        parseResponseHeader(response);
+
+        return response.toString();
+    }
+
+    private String parseResponse(final ResponseStatus status, final String responseBody) {
+        StringBuilder response = parseResponseLine(status);
+        parseResponseHeader(response);
         response.append("\r\n").append(responseBody);
 
         return response.toString();
+    }
+
+    private StringBuilder parseResponseLine(ResponseStatus status) {
+        return new StringBuilder("HTTP/1.1 " + status.parseStatusLine() + " \r\n");
+    }
+
+    private void parseResponseHeader(StringBuilder response) {
+        for (String key : responseHeaders.keySet()) {
+            response.append(key).append(": ").append(responseHeaders.get(key)).append(" ").append("\r\n");
+        }
     }
 }

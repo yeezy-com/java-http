@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.apache.coyote.Processor;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.ResponseStatus;
 import org.apache.coyote.http11.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,17 +54,19 @@ public class Http11Processor implements Runnable, Processor {
 
     private void getMethodHandle(final HttpRequest httpRequest, final HttpResponse httpResponse) throws IOException {
         if ("/".equals(httpRequest.getPath())) {
-            httpResponse.send200(ContentType.HTML, "Hello world!");
+            httpResponse.sendResponse(ResponseStatus.OK, ContentType.HTML, "Hello world!");
             return;
         }
 
         if ("/login".equals(httpRequest.getPath())) {
             if (httpRequest.getSession(false) != null) {
-                httpResponse.send302("/index.html", "");
+                httpResponse.addHeader("Location", "/index.html");
+                httpResponse.sendResponse(ResponseStatus.FOUND);
                 return;
             }
 
-            httpResponse.send200(
+            httpResponse.sendResponse(
+                ResponseStatus.OK,
                 ContentType.HTML,
                 new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath() + ".html"))
             );
@@ -71,7 +74,8 @@ public class Http11Processor implements Runnable, Processor {
         }
 
         if ("/register".equals(httpRequest.getPath())) {
-            httpResponse.send200(ContentType.HTML, new String(staticFileLoader.readAllFileWithUri("/register.html")));
+            httpResponse.sendResponse(ResponseStatus.OK, ContentType.HTML,
+                new String(staticFileLoader.readAllFileWithUri("/register.html")));
             return;
         }
 
@@ -82,7 +86,7 @@ public class Http11Processor implements Runnable, Processor {
         String extension = httpRequest.getPath().substring(index + 1);
 
         String staticFile = new String(staticFileLoader.readAllFileWithUri(httpRequest.getPath()));
-        httpResponse.send200(ContentType.valueOf(extension.toUpperCase()), staticFile);
+        httpResponse.sendResponse(ResponseStatus.OK, ContentType.valueOf(extension.toUpperCase()), staticFile);
     }
 
     private void postMethodHandle(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
@@ -103,7 +107,8 @@ public class Http11Processor implements Runnable, Processor {
             InMemoryUserRepository.save(newUser);
             log.info("사용자 회원가입 완료: {}", newUser.getAccount());
 
-            httpResponse.send302("/index.html", "");
+            httpResponse.addHeader("Location", "/index.html");
+            httpResponse.sendResponse(ResponseStatus.FOUND);
             return;
         }
 
@@ -120,16 +125,22 @@ public class Http11Processor implements Runnable, Processor {
                     log.info("{}", user.get());
 
                     httpResponse.addHeader("Set-Cookie", "JSESSIONID=" + session.getId());
-                    httpResponse.send302("/index.html", "");
+                    httpResponse.addHeader("Location", "/index.html");
+                    httpResponse.sendResponse(ResponseStatus.FOUND);
                 } else {
                     log.info("아이디 또는 비밀번호가 다릅니다.");
-                    httpResponse.send401(
+                    httpResponse.sendResponse(
+                        ResponseStatus.UNAUTHORIZED,
                         ContentType.HTML,
                         new String(staticFileLoader.readAllFileWithUri("/401.html"))
                     );
                 }
 
-                httpResponse.send400(ContentType.HTML, "아이디, 비밀번호는 필수입니다.");
+                httpResponse.sendResponse(
+                    ResponseStatus.BAD_REQUEST,
+                    ContentType.PLAIN,
+                    "아이디, 비밀번호는 필수입니다."
+                );
             }
         }
     }
