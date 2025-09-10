@@ -11,6 +11,8 @@ public class HttpResponse {
     private final Map<String, String> responseHeaders = new HashMap<>();
     private final OutputStream outputStream;
 
+    private String responseBody;
+
     public HttpResponse(OutputStream outputStream) {
         this.outputStream = outputStream;
     }
@@ -19,20 +21,15 @@ public class HttpResponse {
         responseHeaders.put(key, value);
     }
 
-    public void sendResponse(final ResponseStatus responseStatus,
-                             final ContentType contentType,
-                             final String responseBody) throws IOException {
+    public void setResponseBody(final ContentType contentType, final String responseBody) {
         addHeader("Content-Type", contentType.getMimeType() + ";charset=utf-8");
         addHeader("Content-Length", String.valueOf(responseBody.getBytes(StandardCharsets.UTF_8).length));
-        String http = parseResponse(responseStatus, responseBody);
 
-        writeOutputStream(http);
+        this.responseBody = responseBody;
     }
 
     public void sendResponse(final ResponseStatus responseStatus) throws IOException {
-        addHeader("Content-Length", String.valueOf(0));
         String http = parseResponse(responseStatus);
-
         writeOutputStream(http);
     }
 
@@ -45,14 +42,12 @@ public class HttpResponse {
         StringBuilder response = parseResponseLine(status);
         parseResponseHeader(response);
 
-        return response.toString();
-    }
+        if (responseBody == null) {
+            addHeader("Content-Length", String.valueOf(0));
+            return response.toString();
+        }
 
-    private String parseResponse(final ResponseStatus status, final String responseBody) {
-        StringBuilder response = parseResponseLine(status);
-        parseResponseHeader(response);
         response.append("\r\n").append(responseBody);
-
         return response.toString();
     }
 
