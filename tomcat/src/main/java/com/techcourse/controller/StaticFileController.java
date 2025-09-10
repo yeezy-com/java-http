@@ -11,16 +11,17 @@ public class StaticFileController extends AbstractController {
 
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
-        int index = request.getPath().lastIndexOf(".");
-        if (index == -1) {
-            response.setResponseBody(ContentType.PLAIN, "해당 정적 파일을 찾을 수 없습니다.");
-            response.sendResponse(ResponseStatus.BAD_REQUEST);
-            return;
-        }
-        String extension = request.getPath().substring(index + 1);
+        String path = request.getPath();
+        String extension = ".html";
+        int index = path.lastIndexOf(".");
 
+        if (index != -1) {
+            extension = request.getPath().substring(index + 1);
+        }
+        
         String staticFile = new String(StaticFileLoader.readAllFileWithUri(request.getPath()));
         ContentType type = ContentType.from(extension);
+
         if (type == null) {
             response.setResponseBody(ContentType.PLAIN, "해당 정적 파일을 찾을 수 없습니다.");
             response.sendResponse(ResponseStatus.BAD_REQUEST);
