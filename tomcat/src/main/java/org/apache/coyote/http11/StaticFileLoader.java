@@ -8,7 +8,7 @@ import java.nio.file.Files;
 public class StaticFileLoader {
     private static final String PREFIX = "static";
 
-    private File findFileWithUri(final String fileUri) {
+    private static File findFileWithUri(final String fileUri) {
         URL systemResource = ClassLoader.getSystemResource(PREFIX + fileUri);
         if (systemResource == null) {
             throw new IllegalArgumentException("정적 파일을 찾지 못했습니다.");
@@ -17,7 +17,7 @@ public class StaticFileLoader {
         return new File(systemResource.getFile());
     }
 
-    public byte[] readAllFileWithUri(final String fileUri) throws IOException {
+    public static byte[] readAllFileWithUri(final String fileUri) throws IOException {
         return Files.readAllBytes(findFileWithUri(fileUri).toPath());
     }
 }
