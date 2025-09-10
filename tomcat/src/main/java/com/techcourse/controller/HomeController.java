@@ -13,4 +13,9 @@ public class HomeController extends AbstractController {
         response.setResponseBody(ContentType.PLAIN, "Hello world!");
         response.sendResponse(ResponseStatus.OK);
     }
+
+    @Override
+    public boolean support(HttpRequest request) {
+        return "/".equals(request.getPath());
+    }
 }

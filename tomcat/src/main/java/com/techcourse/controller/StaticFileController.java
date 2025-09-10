@@ -32,8 +32,13 @@ public class StaticFileController extends AbstractController {
             response.setResponseBody(type, staticFile);
             response.sendResponse(ResponseStatus.OK);
         } catch (IllegalArgumentException e) {
-            response.setResponseBody(ContentType.HTML, "/404.html");
+            response.setResponseBody(ContentType.HTML, new String(StaticFileLoader.readAllFileWithUri("/404.html")));
             response.sendResponse(ResponseStatus.NOT_FOUND);
         }
+    }
+
+    @Override
+    public boolean support(HttpRequest request) {
+        return true;
     }
 }

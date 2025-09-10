@@ -56,4 +56,9 @@ public class RegisterController extends AbstractController {
         response.setResponseBody(ContentType.HTML, new String(StaticFileLoader.readAllFileWithUri(REGISTER_PAGE)));
         response.sendResponse(ResponseStatus.OK);
     }
+
+    @Override
+    public boolean support(HttpRequest request) {
+        return "/register".equals(request.getPath());
+    }
 }

@@ -61,4 +61,9 @@ public class LoginController extends AbstractController {
         response.setResponseBody(ContentType.HTML, new String(StaticFileLoader.readAllFileWithUri(LOGIN_PAGE)));
         response.sendResponse(ResponseStatus.OK);
     }
+
+    @Override
+    public boolean support(HttpRequest request) {
+        return "/login".equals(request.getPath());
+    }
 }
