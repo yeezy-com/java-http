@@ -13,7 +13,7 @@ import org.apache.coyote.http11.session.SessionManager;
 public class HttpRequest {
 
     private final Manager manager = SessionManager.getInstance();
-    
+
     private final RequestLine requestLine;
     private final RequestHeader requestHeader;
     private final RequestBody requestBody;

@@ -30,7 +30,6 @@ public class RequestBody {
         }
     }
 
-    // TODO: Content-Type에 따라 파싱 방법 다르게 적용하기
     private void parseBody(final String requestBody) {
         for (String keyValue : requestBody.split("&")) {
             String[] keyValues = keyValue.split("=");
