@@ -1,11 +1,11 @@
 package com.techcourse.controller;
 
+import com.techcourse.controller.util.StaticFileLoader;
 import com.techcourse.db.InMemoryUserRepository;
 import com.techcourse.exception.UnauthorizedException;
 import com.techcourse.model.User;
 import java.util.Optional;
 import org.apache.coyote.http11.ContentType;
-import org.apache.coyote.http11.StaticFileLoader;
 import org.apache.coyote.http11.controller.AbstractController;
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
