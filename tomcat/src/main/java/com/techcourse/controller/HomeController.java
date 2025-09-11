@@ -10,7 +10,7 @@ public class HomeController extends AbstractController {
 
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
-        response.setResponseBody(ContentType.PLAIN, "Hello world!");
+        response.setResponseBody(ContentType.HTML, "Hello world!");
         response.sendResponse(ResponseStatus.OK);
     }
 
