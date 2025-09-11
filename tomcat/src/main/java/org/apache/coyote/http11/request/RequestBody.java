@@ -24,21 +24,23 @@ public class RequestBody {
             bufferedReader.read(buffer, 0, contentLength);
             String requestBody = new String(buffer);
 
-            parseBody(requestBody);
+            parseBody(requestHeader, requestBody);
         } catch (IOException e) {
             throw new RuntimeException("요청 처리 중 예외가 발생했습니다.");
         }
     }
 
-    private void parseBody(final String requestBody) {
-        for (String keyValue : requestBody.split("&")) {
-            String[] keyValues = keyValue.split("=");
-            if (keyValues.length == 1) {
-                body.put(keyValues[0].trim(), "");
-                continue;
-            }
+    private void parseBody(final RequestHeader requestHeader, final String requestBody) {
+        if ("application/x-form-urlencoded".equals(requestHeader.getHeader("Content-Type"))) {
+            for (String keyValue : requestBody.split("&")) {
+                String[] keyValues = keyValue.split("=");
+                if (keyValues.length == 1) {
+                    body.put(keyValues[0].trim(), "");
+                    continue;
+                }
 
-            body.put(keyValues[0].trim(), keyValues[1].trim());
+                body.put(keyValues[0].trim(), keyValues[1].trim());
+            }
         }
     }
 
