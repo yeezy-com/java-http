@@ -42,12 +42,12 @@ public class RequestHeader {
     public boolean existsCookie(final String key) {
         return httpCookie.existsKey(key);
     }
-
-    public HttpCookie getHttpCookie() {
-        return httpCookie;
-    }
-
+    
     public String getHeader(final String key) {
         return headers.get(key);
+    }
+
+    public String getCookie(String key) {
+        return httpCookie.getValue(key);
     }
 }
