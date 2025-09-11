@@ -2,6 +2,7 @@ package org.apache.coyote.http11.controller;
 
 import org.apache.coyote.http11.request.HttpRequest;
 import org.apache.coyote.http11.response.HttpResponse;
+import org.apache.coyote.http11.response.ResponseStatus;
 
 public abstract class AbstractController implements Controller {
 
@@ -17,10 +18,14 @@ public abstract class AbstractController implements Controller {
             return;
         }
 
-        return;
+        response.sendResponse(ResponseStatus.METHOD_NOT_ALLOWED);
     }
 
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception { /* NOOP */ }
+    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
+        response.sendResponse(ResponseStatus.METHOD_NOT_ALLOWED);
+    }
 
-    protected void doGet(HttpRequest request, HttpResponse response) throws Exception { /* NOOP */ }
+    protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
+        response.sendResponse(ResponseStatus.METHOD_NOT_ALLOWED);
+    }
 }
