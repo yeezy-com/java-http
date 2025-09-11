@@ -8,9 +8,10 @@ import org.apache.coyote.http11.request.HttpRequest;
 public class RequestMapping {
 
     private static final List<Controller> controllers = new ArrayList<>();
+    private static final RequestMapping instance = new RequestMapping();
 
     public static RequestMapping getInstance() {
-        return new RequestMapping();
+        return instance;
     }
 
     public RequestMapping add(final Controller controller) {
