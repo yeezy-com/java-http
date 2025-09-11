@@ -14,7 +14,7 @@ public class RequestMapping {
     }
 
     public RequestMapping add(final Controller controller) {
-        controllers.addFirst(controller);
+        controllers.add(controller);
         return this;
     }
 

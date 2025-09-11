@@ -13,10 +13,10 @@ public class Application {
         final var tomcat = new Tomcat();
 
         RequestMapping.getInstance()
-            .add(new StaticFileController())
             .add(new HomeController())
             .add(new LoginController())
-            .add(new RegisterController());
+            .add(new RegisterController())
+            .add(new StaticFileController());
         tomcat.start();
     }
 }
