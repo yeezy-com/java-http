@@ -18,25 +18,20 @@ public class RegisterController extends AbstractController {
 
     @Override
     protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
-        try {
-            String account = request.getBody("account");
-            validateAccountIsNotEmpty(account);
+        String account = request.getBody("account");
+        validateAccountIsNotEmpty(account);
 
-            Optional<User> user = InMemoryUserRepository.findByAccount(account);
-            validateUserIsExists(user);
+        Optional<User> user = InMemoryUserRepository.findByAccount(account);
+        validateUserIsExists(user);
 
-            String password = request.getBody("password");
-            String email = request.getBody("email");
-            User newUser = new User(account, password, email);
-            InMemoryUserRepository.save(newUser);
-            log.info("사용자 회원가입 완료: {}", newUser.getAccount());
+        String password = request.getBody("password");
+        String email = request.getBody("email");
+        User newUser = new User(account, password, email);
+        InMemoryUserRepository.save(newUser);
+        log.info("사용자 회원가입 완료: {}", newUser.getAccount());
 
-            response.addHeader("Location", "/index.html");
-            response.sendResponse(ResponseStatus.FOUND);
-        } catch (IllegalArgumentException e) {
-            response.setResponseBody(ContentType.PLAIN, e.getMessage());
-            response.sendResponse(ResponseStatus.BAD_REQUEST);
-        }
+        response.addHeader("Location", "/index.html");
+        response.sendResponse(ResponseStatus.FOUND);
     }
 
     private void validateUserIsExists(Optional<User> user) {

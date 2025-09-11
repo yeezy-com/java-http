@@ -15,14 +15,14 @@ import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
 class Http11ProcessorTest {
-    
+
     @BeforeAll
     static void beforeAll() {
         RequestMapping.getInstance()
-            .add(new StaticFileController())
             .add(new HomeController())
             .add(new LoginController())
-            .add(new RegisterController());
+            .add(new RegisterController())
+            .add(new StaticFileController());
     }
 
     @Test

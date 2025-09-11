@@ -4,6 +4,7 @@ import com.techcourse.controller.util.StaticFileLoader;
 import com.techcourse.db.InMemoryUserRepository;
 import com.techcourse.exception.UnauthorizedException;
 import com.techcourse.model.User;
+import java.io.IOException;
 import java.util.Optional;
 import org.apache.coyote.http11.ContentType;
 import org.apache.coyote.http11.controller.AbstractController;
@@ -19,34 +20,26 @@ public class LoginController extends AbstractController {
     private static final String LOGIN_PAGE = "/login.html";
 
     @Override
-    protected void doPost(HttpRequest request, HttpResponse response) throws Exception {
-        try {
-            String account = request.getBody("account");
-            String password = request.getBody("password");
+    protected void doPost(HttpRequest request, HttpResponse response) throws IOException {
+        String account = request.getBody("account");
+        String password = request.getBody("password");
 
-            if (account != null && password != null) {
-                Optional<User> user = InMemoryUserRepository.findByAccount(account);
-                if (user.isPresent() && user.get().checkPassword(password)) {
-                    final Session session = request.getSession(true);
-                    session.setAttribute("user", user.get());
+        if (account != null && password != null) {
+            Optional<User> user = InMemoryUserRepository.findByAccount(account);
+            if (user.isPresent() && user.get().checkPassword(password)) {
+                final Session session = request.getSession(true);
+                session.setAttribute("user", user.get());
 
-                    log.info("{}", user.get());
+                log.info("{}", user.get());
 
-                    response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId());
-                    response.addHeader("Location", "/index.html");
-                    response.sendResponse(ResponseStatus.FOUND);
-                } else {
-                    throw new UnauthorizedException(new String(StaticFileLoader.readAllFileWithUri("/401.html")));
-                }
+                response.addHeader("Set-Cookie", "JSESSIONID=" + session.getId());
+                response.addHeader("Location", "/index.html");
+                response.sendResponse(ResponseStatus.FOUND);
             } else {
-                throw new IllegalArgumentException("아이디, 비밀번호는 필수입니다.");
+                throw new UnauthorizedException(new String(StaticFileLoader.readAllFileWithUri("/401.html")));
             }
-        } catch (UnauthorizedException e) {
-            response.setResponseBody(ContentType.HTML, e.getMessage());
-            response.sendResponse(ResponseStatus.UNAUTHORIZED);
-        } catch (IllegalArgumentException e) {
-            response.setResponseBody(ContentType.PLAIN, e.getMessage());
-            response.sendResponse(ResponseStatus.BAD_REQUEST);
+        } else {
+            throw new IllegalArgumentException("아이디, 비밀번호는 필수입니다.");
         }
     }
 

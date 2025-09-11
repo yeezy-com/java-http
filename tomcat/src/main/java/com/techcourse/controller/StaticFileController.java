@@ -9,32 +9,28 @@ import org.apache.coyote.http11.response.ResponseStatus;
 
 public class StaticFileController extends AbstractController {
 
+    public static final String DEFAULT_EXTENSION = ".html";
+    public static final String EXTENSION_INDICATOR = ".";
+
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws Exception {
-        try {
-            String path = request.getPath();
-            String extension = ".html";
-            int index = path.lastIndexOf(".");
+        String path = request.getPath();
+        String extension = DEFAULT_EXTENSION;
+        int index = path.lastIndexOf(EXTENSION_INDICATOR);
 
-            if (index != -1) {
-                extension = path.substring(index + 1);
-            }
-
-            String staticFile = new String(StaticFileLoader.readAllFileWithUri(path));
-            ContentType type = ContentType.from(extension);
-
-            if (type == null) {
-                response.setResponseBody(ContentType.PLAIN, "해당 정적 파일을 찾을 수 없습니다.");
-                response.sendResponse(ResponseStatus.BAD_REQUEST);
-                return;
-            }
-
-            response.setResponseBody(type, staticFile);
-            response.sendResponse(ResponseStatus.OK);
-        } catch (IllegalArgumentException e) {
-            response.setResponseBody(ContentType.HTML, new String(StaticFileLoader.readAllFileWithUri("/404.html")));
-            response.sendResponse(ResponseStatus.NOT_FOUND);
+        if (index != -1) {
+            extension = path.substring(index + 1);
         }
+
+        String staticFile = new String(StaticFileLoader.readAllFileWithUri(path));
+        ContentType type = ContentType.from(extension);
+
+        if (type == null) {
+            throw new IllegalArgumentException("지원하지 않는 정적 데이터입니다.");
+        }
+
+        response.setResponseBody(type, staticFile);
+        response.sendResponse(ResponseStatus.OK);
     }
 
     @Override

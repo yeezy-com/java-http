@@ -7,7 +7,7 @@ import org.apache.coyote.http11.response.ResponseStatus;
 public abstract class AbstractController implements Controller {
 
     @Override
-    public final void service(HttpRequest request, HttpResponse response) throws Exception {
+    public void service(HttpRequest request, HttpResponse response) throws Exception {
         if (request.isGetMethod()) {
             doGet(request, response);
             return;

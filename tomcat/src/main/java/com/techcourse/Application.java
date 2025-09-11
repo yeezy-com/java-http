@@ -1,5 +1,6 @@
 package com.techcourse;
 
+import com.techcourse.controller.FrontController;
 import com.techcourse.controller.HomeController;
 import com.techcourse.controller.LoginController;
 import com.techcourse.controller.RegisterController;
@@ -12,11 +13,13 @@ public class Application {
     public static void main(String[] args) {
         final var tomcat = new Tomcat();
 
-        RequestMapping.getInstance()
+        FrontController instance = FrontController.getInstance()
             .add(new HomeController())
             .add(new LoginController())
             .add(new RegisterController())
             .add(new StaticFileController());
+        RequestMapping.getInstance()
+            .add(instance);
         tomcat.start();
     }
 }
