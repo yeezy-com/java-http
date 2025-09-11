@@ -27,6 +27,11 @@ public class SessionManager implements Manager {
         SESSIONS.remove(session.getId());
     }
 
+    @Override
+    public boolean existsSession(String id) {
+        return SESSIONS.containsKey(id);
+    }
+
     private SessionManager() {
     }
 }
