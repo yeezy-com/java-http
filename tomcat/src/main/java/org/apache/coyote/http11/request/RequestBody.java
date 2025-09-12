@@ -31,7 +31,7 @@ public class RequestBody {
     }
 
     private void parseBody(final RequestHeader requestHeader, final String requestBody) {
-        if ("application/x-form-urlencoded".equals(requestHeader.getHeader("Content-Type"))) {
+        if ("application/x-www-form-urlencoded".equals(requestHeader.getHeader("Content-Type"))) {
             for (String keyValue : requestBody.split("&")) {
                 String[] keyValues = keyValue.split("=");
                 if (keyValues.length == 1) {
