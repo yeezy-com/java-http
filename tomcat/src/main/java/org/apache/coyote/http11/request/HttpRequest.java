@@ -13,6 +13,7 @@ import org.apache.coyote.http11.session.SessionManager;
 public class HttpRequest {
 
     private final Manager manager = SessionManager.getInstance();
+
     private final RequestLine requestLine;
     private final RequestHeader requestHeader;
     private final RequestBody requestBody;
@@ -48,8 +49,11 @@ public class HttpRequest {
 
     public Session getSession(boolean status) throws IOException {
         if (requestHeader.existsCookie("JSESSIONID")) {
-            String jsessionid = requestHeader.getHttpCookie().getValue("JSESSIONID");
-            return manager.findSession(jsessionid);
+            String jsessionid = requestHeader.getCookie("JSESSIONID");
+
+            if (manager.existsSession(jsessionid)) {
+                return manager.findSession(jsessionid);
+            }
         }
 
         if (status) {

@@ -14,6 +14,14 @@ public enum ContentType {
         this.mimeType = mimeType;
     }
 
+    public static ContentType from(String extension) {
+        try {
+            return ContentType.valueOf(extension.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     public String getMimeType() {
         return mimeType;
     }

@@ -2,20 +2,34 @@ package org.apache.coyote.http11;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.techcourse.controller.HomeController;
+import com.techcourse.controller.LoginController;
+import com.techcourse.controller.RegisterController;
+import com.techcourse.controller.StaticFileController;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import support.StubSocket;
 
 class Http11ProcessorTest {
 
+    @BeforeAll
+    static void beforeAll() {
+        RequestMapping.getInstance()
+            .add(new HomeController())
+            .add(new LoginController())
+            .add(new RegisterController())
+            .add(new StaticFileController());
+    }
+
     @Test
     void process() {
         // given
         final var socket = new StubSocket();
-        final var processor = new Http11Processor(socket, new StaticFileLoader());
+        final var processor = new Http11Processor(socket);
 
         // when
         processor.process(socket);
@@ -42,7 +56,7 @@ class Http11ProcessorTest {
             "");
 
         final var socket = new StubSocket(httpRequest);
-        final Http11Processor processor = new Http11Processor(socket, new StaticFileLoader());
+        final Http11Processor processor = new Http11Processor(socket);
 
         // when
         processor.process(socket);

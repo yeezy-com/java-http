@@ -40,6 +40,8 @@ public interface Manager {
      */
     Session findSession(String id) throws IOException;
 
+    boolean existsSession(String id);
+
     /**
      * Remove this Session from the active Sessions for this Manager.
      *

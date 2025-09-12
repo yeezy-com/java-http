@@ -24,22 +24,23 @@ public class RequestBody {
             bufferedReader.read(buffer, 0, contentLength);
             String requestBody = new String(buffer);
 
-            parseBody(requestBody);
+            parseBody(requestHeader, requestBody);
         } catch (IOException e) {
             throw new RuntimeException("요청 처리 중 예외가 발생했습니다.");
         }
     }
 
-    // TODO: Content-Type에 따라 파싱 방법 다르게 적용하기
-    private void parseBody(final String requestBody) {
-        for (String keyValue : requestBody.split("&")) {
-            String[] keyValues = keyValue.split("=");
-            if (keyValues.length == 1) {
-                body.put(keyValues[0].trim(), "");
-                continue;
-            }
+    private void parseBody(final RequestHeader requestHeader, final String requestBody) {
+        if ("application/x-www-form-urlencoded".equals(requestHeader.getHeader("Content-Type"))) {
+            for (String keyValue : requestBody.split("&")) {
+                String[] keyValues = keyValue.split("=");
+                if (keyValues.length == 1) {
+                    body.put(keyValues[0].trim(), "");
+                    continue;
+                }
 
-            body.put(keyValues[0].trim(), keyValues[1].trim());
+                body.put(keyValues[0].trim(), keyValues[1].trim());
+            }
         }
     }
 
